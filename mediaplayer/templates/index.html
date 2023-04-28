@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Media Player</title>
+  </head>
+  <body>
+    <h1>Media Player</h1>
+    <hr>
+    {% for image in image_files %}
+    <form method="GET" action="{{ url_for('display', image=image) }}">
+      <button type="submit">{{ image }}</button>
+    </form>
+    {% endfor %}
+    {% if current_image %}
+    <br><br>
+    <form method="GET" action="{{ url_for('display', image=current_image) }}">
+      <button type="submit">Close current image</button>
+    </form>
+    {% endif %}
+  </body>
+</html>
