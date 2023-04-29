@@ -11,11 +11,11 @@
       <button type="submit">{{ image }}</button>
     </form>
     {% endfor %}
-    {% if current_image %}
+    
     <br><br>
-    <form method="GET" action="{{ url_for('display', image=current_image) }}">
+    <form method="GET" action="{{ url_for('close') }}">
       <button type="submit">Close current image</button>
     </form>
-    {% endif %}
+    
   </body>
 </html>
