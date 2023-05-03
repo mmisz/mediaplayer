@@ -1,3 +1,9 @@
 .bg-icon{
     font-size: 80px;
 }
+.btn-circle.btn-xl {
+            text-align: center;
+        }
+.delete-folder {
+       margin-left: 10px;
+}
