@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'very_secret_key_2222'
 
 CURRENT_IMAGE = None
-HOME_DIR = "/var/www/html/mediaplayer/static/images"
+HOME_DIR = "/var/www/html/mediaplayer/"
 
 def get_images(catalog_path_relative):
     catalog_path='/var/www/html/mediaplayer'+catalog_path_relative
@@ -30,7 +30,7 @@ def show_image(image_path):
 @app.route('/')
 def index():
     os.environ['DISPLAY'] = ':0' # set the DISPLAY environment variable
-    return render_template('index.html', title = 'home', h1 = 'Media Player')
+    return render_template('index.html', title = 'home')
 
 @app.route('/images', methods=['POST', 'GET'])
 def images():
@@ -39,12 +39,14 @@ def images():
     #else:
     #    session['dir_path'] = None
     dir_path = session['dir_path']
+    image_dir = '/var/www/html/mediaplayer' + dir_path
+    folders = [name for name in os.listdir(image_dir) if os.path.isdir(os.path.join(image_dir, name)) and name != 'thumbnails']
     # List all images in the IMAGE_DIR directory
     image_files = get_images(dir_path)
     thumbnails = generate_thumbnails(image_files)
     # Zip the image files and their corresponding thumbnails together
     image_data = zip(image_files, thumbnails)
-    return render_template('images.html', image_data=image_data, title='images', h1 = 'Albumy zdjęć', dir_path=dir_path)
+    return render_template('images.html', image_data=image_data, title='images', h1 = 'Albumy zdjęć', dir_path=dir_path, folders = folders)
 
 @app.route('/movies')
 def movies():
@@ -88,8 +90,32 @@ def upload():
         save_dir = '/var/www/html/mediaplayer'+session['dir_path']
         # Save the uploaded file to the specified folder
         file.save(os.path.join(save_dir, file.filename))
-        flash('File uploaded successfully')
+        flash('File uploaded successfully', 'success')
         return redirect('/images')
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    filename = request.form['filename']
+    # Get the filename from the form data
+    file_to_remove = '/var/www/html/mediaplayer'+session['dir_path']+'/'+filename
+    os.remove(file_to_remove)
+    
+    return redirect('/images')
+
+@app.route("/create-folder", methods=["POST"])
+def create_folder():
+    folder_name = request.form.get("folder-name")
+    if not folder_name:
+        flash("Please enter a folder name", 'error')
+        return redirect('/images')
+    
+    folder_path = os.path.join('/var/www/html/mediaplayer'+session['dir_path'], folder_name)
+    if os.path.isdir(folder_path):
+        flash(f"{folder_name} already exists", 'warning')
+        return redirect('/images')
+    
+    os.makedirs(folder_path)
+    flash(f"{folder_name} created successfully", 'success')
+    return redirect('/images')
 #if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0')
