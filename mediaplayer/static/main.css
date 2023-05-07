@@ -10,3 +10,13 @@
 .inline-elmt{
     display: inline-block;
 }
+.logo{
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+}
+.btn-with-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

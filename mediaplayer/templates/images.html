@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="d-flex justify-content-center align-items-center">
 
-  <form method="POST" action="/create-folder" class="inline-elmt">
-    <div class="form-group">
-      <label for="folder-name">Folder Name:</label>
-      <input type="text" name="folder-name" id="folder-name" required>
-    </div>
+
+<div class="d-flex justify-content-center align-items-center">
+  <label for="folder-name">Nazwa albumu:</label>
+      <input type="text" name="folder-name" id="folder-name" form="add-folder" required>
+  <form method="POST" action="/create-folder" id="add-folder">
     <button type="submit" class="btn btn-primary btn-circle btn-xl">
       <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
         <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2Zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672Z"/>
@@ -14,32 +13,71 @@
       </svg>
     </button>
   </form>
-
-
-<button type="button" class="btn btn-secondary btn-circle btn-xl delete-folder">
-  <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-folder-minus" viewBox="0 0 16 16">
-    <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
-    <path d="M11 11.5a.5.5 0 0 1 .5-.5h4a.5.5 0 1 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
-  </svg>
-</button>
-
-<div class="upload-container">
-  <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
+  <form method="POST" enctype="multipart/form-data" action="">
+    <button type="submit" class="btn btn-secondary btn-circle btn-xl delete-folder">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-folder-minus" viewBox="0 0 16 16">
+        <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
+        <path d="M11 11.5a.5.5 0 0 1 .5-.5h4a.5.5 0 1 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+    </button>
+  </form>
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}" id="add-image">
+    <button type="submit" class="btn btn-primary btn-circle btn-xl">
+      <img src="{{ url_for('static', filename='card-image.svg') }}" width="80" height="86">
+    </button>
+  </form>
+  <div class="upload-container">
     <div class="form-group">
-      <label for="image">Choose Image:</label>
-      <input type="file" name="file" class="form-control-file" id="image" required>
+      <label for="image">Wybierz obraz:</label>
+      <input type="file" name="file" class="form-control-file" id="image" form="add-image" required>
     </div>
-    <button type="submit" class="btn btn-primary">Dodaj</button>
+  </div>
+</div>
+
+<hr>
+<h3 class="inline-elmt">
+  {%for album in dir_path%}
+  {{album}}{% if not loop.last %} > {% endif %}
+  {% endfor %}
+</h3>
+  {% if prev_folder != '' %}
+<form method="POST" action="{{ url_for('images') }}" class="inline-elmt">
+  <input type="hidden" name="dir_path" value="{{ url_for('static', filename='images'+prev_folder) }}">
+  <button type="submit" class="btn-with-icon btn btn-secondary">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+      <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+    </svg>
+</button>
+</form>
+{% else %}
+<form method="POST" action="{{ url_for('images') }}" class="inline-elmt">
+  <input type="hidden" name="dir_path" value="{{ url_for('static', filename='images'+prev_folder) }}">
+  <button type="submit" class="btn-with-icon btn btn-secondary">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"/>
+    </svg>
+</button>
+</form>
+{% endif %}
+
+<div>
+  {% for folder_name, folder_path in folder_data %}
+  <div class="container-fluid">
+  <form method="POST" action="{{ url_for('images') }}">
+    <input type="hidden" name="test" value="{{ url_for('static', filename=folder_path) }}">
+    <input type="hidden" name="dir_path" value="{{ url_for('static', filename=folder_path) }}">
+    <button type="submit" class="btn btn-primary">
+      {{ folder_name }}
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder" viewBox="0 0 16 16">
+        <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707z"/>
+      </svg>
+  </button>
   </form>
 </div>
-
-</div>
-<hr>
-{{dir_path}}
-<div class="list-group">
-  {% for folder in folders %}
-    <a href="#" class="list-group-item list-group-item-action">{{ folder }}</a>
   {% endfor %}
+
+
   </div>
 <hr>
 <div class="container-fluid">
@@ -47,7 +85,7 @@
     {% for image, thumbnail in image_data %}
     <div class="col-md-4 col-sm-6 col-12 mb-3">
       <a href="{{ url_for('display', image=image) }}">
-        <img src="{{ url_for('static', filename='images/'+thumbnail) }}" class="img-fluid rounded" alt="{{ image }}">
+        <img src="{{ url_for('static', filename=thumbnail) }}" class="img-fluid rounded" alt="{{ image }}">
       </a>
 
       <form method="POST" action="/delete" onsubmit="return confirm('Are you sure you want to delete {{ image }}?')" class="inline-elmt">
